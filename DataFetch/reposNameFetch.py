@@ -2,14 +2,15 @@ import requests
 import json
 
 
-class nameFetch:
+class repositoriesFetch:
     def __init__(self,url,languages,headers):
         self.url = url
         self.languages = languages
         self.headers = headers
-        self.names = []
+        self.repositories = []
+        self.urls=[]
     
-    def sendRequest(self):
+    def retrieveRepositories(self):
         # fetch the content based on both the languages
         for language in self.languages:
             try:
@@ -17,28 +18,36 @@ class nameFetch:
                     'q': f'language:{language}',
                     'sort': 'stars',
                     'order': 'desc',
-                    'per_page': 100 }
+                    'per_page': 1 
+                }
     
                 reponse = requests.get(
                     url= self.url,
                     headers=self.headers,
                     params=params
                 )
+
                 reponse.raise_for_status()
-                self.names.append(reponse.json())
+                self.repositories.append(reponse.json())
+
+                for repo in self.repositories:
+                    if(repo['url']):
+                        self.urls.append(repo['url'])
+                        print(repo['url'])
+
             except requests.exceptions.RequestException as e:
                 print(f"Error fetching data from GitHub API: {e}")
                 return []
     
-    def printNames(self):
-        print(self.names)
+    def printData(self):
+        print("repos, urls = ", self.repositories, self.urls)
 
 
     def cleanData(self):
         """
         1. understand the API reponse structure
-        2. extract the names of the repositories
-        3. store the names of the repositories in the json files
+        2. extract the urls of the repositories
+        3. store the urls of the repositories in the json files
         """
 
 
@@ -48,11 +57,11 @@ headers = {
         # 'Authorization': 'token YOUR_GITHUB_TOKEN'
     }
 
-namefetcher = nameFetch(
-    languages=['javascript','python'],
+repositoriesFetcher = repositoriesFetch(
+    languages=['python'],
     headers= headers,
     url="https://api.github.com/search/repositories"
 )
 
-namefetcher.sendRequest()
-namefetcher.printNames()
+repositoriesFetcher.retrieveRepositories()
+# repositoriesFetcher.printData()
