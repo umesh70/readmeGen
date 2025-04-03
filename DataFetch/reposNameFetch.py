@@ -12,13 +12,13 @@ class repositoriesFetch:
         # fetch the content based on both the languages
         for language in self.languages:
             try:
-                # for page in range(1, 6):
+                for page in range(1, 6):
                     params = {
                         'q': f'language:{language}',
                         'sort': 'stars',
                         'order': 'desc',
                         'per_page': 100,
-                        'page': 5
+                        'page': page
                     }
         
                     response = requests.get(
@@ -57,7 +57,7 @@ headers = {
     }
 
 repositoriesFetcher = repositoriesFetch(
-    languages=['python'],
+    languages=['javascript','python'],
     headers= headers,
     url="https://api.github.com/search/repositories"
 )
